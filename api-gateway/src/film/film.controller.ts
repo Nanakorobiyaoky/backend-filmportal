@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from "@nestjs/common";
+import {Body, Controller, Get, Param, Post} from "@nestjs/common";
 import {FilmService} from "./film.service";
 
 @Controller()
@@ -15,6 +15,15 @@ export class FilmController {
     return this.filmService.getFilmsByGenre(genre)
   }
 
+  @Get('movies')
+  getMoviesData() {
+    // return this.filmService.getMoviesData()
+  }
+
+  @Post('movies')
+  a(@Body() body) {
+    // return this.filmService.getFilmsByFilters(filterDto)
+  }
 
 }
 

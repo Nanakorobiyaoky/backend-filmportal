@@ -1,13 +1,13 @@
 import {BelongsTo, Column, DataType, ForeignKey, Model, Table} from "sequelize-typescript";
 import {Person} from "../persons.model";
 
-interface IFilmWriters{
+interface IFilmWriter{
 	film_id: number
 	person_id: number
 }
 
-@Table({tableName: 'films_composers', timestamps: false, freezeTableName: true})
-export class FilmWriters extends Model<FilmWriters, IFilmWriters> {
+@Table({tableName: 'films_writers', timestamps: false, freezeTableName: true})
+export class FilmWriter extends Model<FilmWriter, IFilmWriter> {
 	@Column({
 		type: DataType.INTEGER,
 		allowNull: false,
@@ -23,6 +23,6 @@ export class FilmWriters extends Model<FilmWriters, IFilmWriters> {
 	})
 	person_id: number
 
-	@BelongsTo(() => Person, 'id')
+	@BelongsTo(() => Person)
 	person: Person
 }

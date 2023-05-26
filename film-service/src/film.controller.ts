@@ -16,4 +16,9 @@ export class FilmController {
 	getFilmsByGenre(@Payload() genre: string) {
 		return this.filmService.getFilmsByGenre(genre)
 	}
+
+	@MessagePattern({ cmd: "get films by person id" })
+	getFilmsByPersonId(@Payload() data) {
+		return this.filmService.getFilmsByPersonId(data)
+	}
 }

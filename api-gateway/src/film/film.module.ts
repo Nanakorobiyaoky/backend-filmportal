@@ -1,4 +1,4 @@
-import {Module} from '@nestjs/common';
+import {forwardRef, Module} from '@nestjs/common';
 import {FilmController} from "./film.controller";
 import {FilmService} from "./film.service";
 import {ClientsModule, Transport} from "@nestjs/microservices";
@@ -23,11 +23,11 @@ import {PersonModule} from "../person/person.module";
 				},
 			},
 		]),
-		PersonModule
+		forwardRef(() => PersonModule)
 	],
 	controllers: [FilmController],
 	providers: [FilmService],
-	exports: []
+	exports: [FilmService]
 })
 export class FilmModule {
 }

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import {forwardRef, Module} from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { FilmModule } from './film/film.module';
 import { PersonModule } from './person/person.module';

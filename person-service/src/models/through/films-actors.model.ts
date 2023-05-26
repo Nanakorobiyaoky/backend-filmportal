@@ -23,6 +23,6 @@ export class FilmActor extends Model<FilmActor, IFilmActor> {
 	})
 	person_id: number
 
-	@BelongsTo(() => Person, 'id')
+	@BelongsTo(() => Person)
 	person: Person
 }

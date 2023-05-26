@@ -6,7 +6,7 @@ interface IFilmOperator{
 	person_id: number
 }
 
-@Table({tableName: 'films_composers', timestamps: false, freezeTableName: true})
+@Table({tableName: 'films_operators', timestamps: false, freezeTableName: true})
 export class FilmOperator extends Model<FilmOperator, IFilmOperator> {
 	@Column({
 		type: DataType.INTEGER,
@@ -23,6 +23,6 @@ export class FilmOperator extends Model<FilmOperator, IFilmOperator> {
 	})
 	person_id: number
 
-	@BelongsTo(() => Person, 'id')
+	@BelongsTo(() => Person)
 	person: Person
 }

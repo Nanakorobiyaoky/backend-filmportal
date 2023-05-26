@@ -17,4 +17,5 @@ export class PersonController {
 	getPersonsByFilmId(@Payload() id: number) {
 		return this.personService.getPersonsByFilmId(id)
 	}
+
 }
