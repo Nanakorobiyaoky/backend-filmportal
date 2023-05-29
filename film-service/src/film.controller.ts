@@ -21,4 +21,10 @@ export class FilmController {
 	getFilmsByPersonId(@Payload() data) {
 		return this.filmService.getFilmsByPersonId(data)
 	}
+
+	@MessagePattern({ cmd: "get main page data" })
+	getMainPageData(@Payload() genreNames: Array<string>) {
+		return this.filmService.getMainPageData(genreNames, 10)
+	}
+
 }

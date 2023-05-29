@@ -55,4 +55,19 @@ export class FilmService {
 
 		return response
 	}
+
+	async getMainPageData(genresIdArr) {
+		const response = await firstValueFrom(this.filmClient.send({ cmd: "get main page data" }, genresIdArr)
+			.pipe(timeout({
+					each: 2000,
+					with: () => throwError(() => new HttpException('GATEWAY TIMEOUT', HttpStatus.GATEWAY_TIMEOUT))
+				}),
+				catchError((error) => {
+					return throwError(() => new HttpException(error.message, error.status));
+				})
+			)
+		)
+
+		return response
+	}
 }

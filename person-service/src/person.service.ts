@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import {HttpStatus, Injectable} from '@nestjs/common';
 import {InjectModel} from "@nestjs/sequelize";
 import {Person} from "./models/persons.model";
 import {FilmActor} from "./models/through/films-actors.model";
@@ -13,6 +13,7 @@ import {FilmVoiceDirector} from "./models/through/films-voice-directors.model";
 import {FilmVoice} from "./models/through/films-voices.model";
 import {FilmWriter} from "./models/through/films-writers.model";
 import {Model} from "sequelize-typescript";
+import {RpcException} from "@nestjs/microservices";
 
 @Injectable()
 export class PersonService {
@@ -39,6 +40,11 @@ export class PersonService {
 				attributes: ['film_id']
 			}
 		})
+
+		if (!person) {
+			this.notFoundException()
+		}
+
 		return person
 	}
 
@@ -76,5 +82,12 @@ export class PersonService {
 			console.log(e)
 			return {}
 		}
+	}
+
+	private notFoundException() {
+		throw new RpcException({
+			message: 'Not Found',
+			status: HttpStatus.NOT_FOUND
+		})
 	}
 }

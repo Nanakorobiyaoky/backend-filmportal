@@ -1,9 +1,20 @@
-import {BelongsToMany, Column, DataType, HasOne, Model, Table} from "sequelize-typescript";
+import {BelongsToMany, Column, DataType, HasMany, HasOne, Model, Table} from "sequelize-typescript";
 import {Country} from "./countries.model";
 import {FilmCountry} from "./films-countries.model";
 import {FilmGenre} from "./films-genres.model";
 import {Genre} from "./genres.model";
 import {FilmBudget} from "./films-budget.model";
+import {FilmActor} from "./through/films-actors.model";
+import {FilmComposer} from "./through/films-composers.model";
+import {FilmDesigner} from "./through/films-designers.model";
+import {FilmDirector} from "./through/films-directors.model";
+import {FilmEditor} from "./through/films-editors.model";
+import {FilmOperator} from "./through/films-operators.model";
+import {FilmProducer} from "./through/films-producers.model";
+import {FilmTranslator} from "./through/films-translators.model";
+import {FilmVoiceDirector} from "./through/films-voice-directors.model";
+import {FilmVoice} from "./through/films-voices.model";
+import {FilmWriter} from "./through/films-writers.model";
 
 interface IFilm {
 		id: number
@@ -114,5 +125,38 @@ export class Film extends Model<Film, IFilm> {
 
 	@HasOne(() => FilmBudget)
 	budget: FilmBudget
+
+	@HasMany(() => FilmActor)
+	actors: FilmActor[]
+
+	@HasMany(() => FilmComposer)
+	composers: FilmComposer[]
+
+	@HasMany(() => FilmDesigner)
+	designers: FilmDesigner[]
+
+	@HasMany(() => FilmDirector)
+	directors: FilmDirector[]
+
+	@HasMany(() => FilmEditor)
+	editors: FilmEditor[]
+
+	@HasMany(() => FilmOperator)
+	operators: FilmOperator[]
+
+	@HasMany(() => FilmProducer)
+	producers: FilmProducer[]
+
+	@HasMany(() => FilmTranslator)
+	translators: FilmTranslator[]
+
+	@HasMany(() => FilmVoiceDirector)
+	voiceDirectors: FilmVoiceDirector[]
+
+	@HasMany(() => FilmVoice)
+	voices: FilmVoice[]
+
+	@HasMany(() => FilmWriter)
+	writers: FilmWriter[]
 
 }
