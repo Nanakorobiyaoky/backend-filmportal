@@ -29,7 +29,7 @@ interface IFilm {
 		rating: number
 		marks: number
 		poster: string
-
+		description: string
 }
 
 @Table({tableName: 'films', timestamps: false, freezeTableName: true})
@@ -116,6 +116,13 @@ export class Film extends Model<Film, IFilm> {
 		defaultValue: null
 	})
 	poster: string
+
+	@Column({
+		type: DataType.TEXT,
+		allowNull: true,
+		defaultValue: null
+	})
+	description: string
 
 	@BelongsToMany(() => Country, () => FilmCountry)
 	country: Country[];

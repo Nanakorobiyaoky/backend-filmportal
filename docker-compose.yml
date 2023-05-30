@@ -1,66 +1,100 @@
 version: '3.9'
 
 services:
+  api-gateway:
+    container_name: api-gateway
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    env_file:
+      - ./api-gateway/.docker.env
+    ports:
+      - 4998:4999
+    restart: always
+    command: npm run start:docker
+    depends_on:
+      - rabbitmq
+
+  auth-service:
+    container_name: auth-service
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    env_file:
+      - ./auth-service/.docker.env
+    restart: always
+    command: npm run start:docker
+    depends_on:
+      - rabbitmq
+      - postgres_auth
+
+  film-service:
+    container_name: film-service
+    build:
+      context: ./film-service
+      dockerfile: Dockerfile
+    env_file:
+      - ./film-service/.docker.env
+    restart: always
+    command: npm run start:docker
+    depends_on:
+      - rabbitmq
+      - postgres_film
+
+  person-service:
+    container_name: person-service
+    build:
+      context: ./person-service
+      dockerfile: Dockerfile
+    env_file:
+      - ./person-service/.docker.env
+    restart: always
+    command: npm run start:docker
+    depends_on:
+      - rabbitmq
+      - postgres_person
+
   rabbitmq:
     container_name: rabbitmq
-    image: rabbitmq:3.9-management
+    image: rabbitmq:3.11.13-management
     hostname: rabbitmq
     restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=rmuser
+      - RABBITMQ_DEFAULT_PASS=rmpassword
+      - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit disk_free_limit 2147483648
     ports:
       - 5672:15672
 
-  postgres_profile:
-    container_name: postgres_profile
-    image: postgres
-    restart: always
-    environment:
-      PG_USER: postgres
-      POSTGRES_PASSWORD: 3228
-      POSTGRES_DB: profile
-    expose:
-      - 5432
-    ports:
-      - 5432
-
-  postgres_user:
-    container_name: postgres_user
-    image: postgres
+  postgres_auth:
+    container_name: postgres_auth
+    image: postgres:15.2
     restart: always
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 3228
-      POSTGRES_DB: user
-    expose:
-      - 5432
+      POSTGRES_PASSWORD: 1111
+      POSTGRES_DB: postgres
     ports:
-      - 5432
+      - 5001:5432
 
-  profile:
-    container_name: profile
-    depends_on:
-      - postgres_profile
-      - rabbitmq
-    image: profile:latest
+  postgres_film:
+    container_name: postgres_film
+    image: postgres:15.2
     restart: always
+    environment:
+      PG_USER: postgres
+      POSTGRES_PASSWORD: 3333
+      POSTGRES_DB: postgres
     ports:
-      - 5672
+      - 5002:5432
 
-  user:
-    container_name: user
-    depends_on:
-      - postgres_user
-      - rabbitmq
-    image: user:latest
+  postgres_person:
+    container_name: postgres_person
+    image: postgres:15.2
     restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 3333
+      POSTGRES_DB: postgres
     ports:
-      - 5672
-
-  gateway:
-    container_name: gateway
-    depends_on:
-      - profile
-      - user
-    image: gateway:latest
-    restart: always
-    ports:
-      - 5000:5000
+      - 5003:5432
