@@ -15,6 +15,7 @@ export class AuthController {
 
 	@MessagePattern({cmd: "register user"})
 	registerUser(@Payload() loginPasswordDto: LoginPasswordDto) {
+		console.log(loginPasswordDto)
 		return this.authService.registerUser(loginPasswordDto);
 	}
 

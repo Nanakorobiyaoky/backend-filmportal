@@ -13,7 +13,9 @@ services:
     restart: always
     command: npm run start:docker
     depends_on:
-      - rabbitmq
+      - website-rabbitmq
+    networks:
+      - backend
 
   auth-service:
     container_name: auth-service
@@ -25,8 +27,10 @@ services:
     restart: always
     command: npm run start:docker
     depends_on:
-      - rabbitmq
+      - website-rabbitmq
       - postgres_auth
+    networks:
+      - backend
 
   film-service:
     container_name: film-service
@@ -38,8 +42,10 @@ services:
     restart: always
     command: npm run start:docker
     depends_on:
-      - rabbitmq
+      - website-rabbitmq
       - postgres_film
+    networks:
+      - backend
 
   person-service:
     container_name: person-service
@@ -51,20 +57,23 @@ services:
     restart: always
     command: npm run start:docker
     depends_on:
-      - rabbitmq
+      - website-rabbitmq
       - postgres_person
+    networks:
+      - backend
 
-  rabbitmq:
-    container_name: rabbitmq
+  website-rabbitmq:
+    container_name: website-rabbitmq
     image: rabbitmq:3.11.13-management
     hostname: rabbitmq
     restart: always
     environment:
-      - RABBITMQ_DEFAULT_USER=rmuser
-      - RABBITMQ_DEFAULT_PASS=rmpassword
       - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit disk_free_limit 2147483648
     ports:
-      - 5672:15672
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - backend
 
   postgres_auth:
     container_name: postgres_auth
@@ -75,7 +84,9 @@ services:
       POSTGRES_PASSWORD: 1111
       POSTGRES_DB: postgres
     ports:
-      - 5001:5432
+      - 6001:5432
+    networks:
+      - backend
 
   postgres_film:
     container_name: postgres_film
@@ -86,7 +97,9 @@ services:
       POSTGRES_PASSWORD: 3333
       POSTGRES_DB: postgres
     ports:
-      - 5002:5432
+      - 6002:5432
+    networks:
+      - backend
 
   postgres_person:
     container_name: postgres_person
@@ -97,4 +110,10 @@ services:
       POSTGRES_PASSWORD: 3333
       POSTGRES_DB: postgres
     ports:
-      - 5003:5432
+      - 6003:5432
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
