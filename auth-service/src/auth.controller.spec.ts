@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 
-describe('AppController', () => {
+describe('CommentController', () => {
   let appController: AuthController;
 
   beforeEach(async () => {

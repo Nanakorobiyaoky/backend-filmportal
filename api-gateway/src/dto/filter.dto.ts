@@ -1,6 +1,3 @@
-import {IsDefined, IsNumber} from "class-validator";
-
-
 export class FilterDto {
 	genre: string
 	country: string

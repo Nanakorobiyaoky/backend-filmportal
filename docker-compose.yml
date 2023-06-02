@@ -62,6 +62,21 @@ services:
     networks:
       - backend
 
+  comment-service:
+    container_name: comment-service
+    build:
+      context: ./comment-service
+      dockerfile: Dockerfile
+    env_file:
+      - ./comment-service/.docker.env
+    restart: always
+    command: npm run start:docker
+    depends_on:
+      - website-rabbitmq
+      - postgres_comment
+    networks:
+      - backend
+
   website-rabbitmq:
     container_name: website-rabbitmq
     image: rabbitmq:3.11.13-management
@@ -81,10 +96,10 @@ services:
     restart: always
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 1111
+      POSTGRES_PASSWORD: 3333
       POSTGRES_DB: postgres
     ports:
-      - 6001:5432
+      - 6010:5432
     networks:
       - backend
 
@@ -95,9 +110,11 @@ services:
     environment:
       PG_USER: postgres
       POSTGRES_PASSWORD: 3333
-      POSTGRES_DB: postgres
+      POSTGRES_DB: films_db
+    volumes:
+      - ./dumps/films-dump.sql:/docker-entrypoint-initdb.d/films-dump.sql
     ports:
-      - 6002:5432
+      - 6011:5432
     networks:
       - backend
 
@@ -108,12 +125,28 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 3333
+      POSTGRES_DB: persons_db
+    volumes:
+      - ./dumps/persons-dump.sql:/docker-entrypoint-initdb.d/persons-dump.sql
+    ports:
+      - 6012:5432
+    networks:
+      - backend
+
+  postgres_comment:
+    container_name: postgres_comment
+    image: postgres:15.2
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 3333
       POSTGRES_DB: postgres
     ports:
-      - 6003:5432
+      - 6013:5432
     networks:
       - backend
 
 networks:
   backend:
     driver: bridge
+

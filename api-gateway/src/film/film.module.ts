@@ -4,6 +4,8 @@ import {FilmService} from "./film.service";
 import {ClientsModule, Transport} from "@nestjs/microservices";
 import {ConfigModule} from "@nestjs/config";
 import {PersonModule} from "../person/person.module";
+import {CommentModule} from "../comment/comment.module";
+import {AuthModule} from "../auth/auth.module";
 
 @Module({
 	imports: [
@@ -23,7 +25,9 @@ import {PersonModule} from "../person/person.module";
 				},
 			},
 		]),
-		forwardRef(() => PersonModule)
+		forwardRef(() => PersonModule),
+		forwardRef(() => AuthModule),
+		CommentModule
 	],
 	controllers: [FilmController],
 	providers: [FilmService],

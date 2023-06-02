@@ -24,7 +24,7 @@ export class FilmBudget extends Model<FilmBudget, IFilmBudget> {
 	currency: string
 
 	@Column({
-		type: DataType.INTEGER,
+		type: DataType.BIGINT,
 		allowNull: false
 	})
 	number: number

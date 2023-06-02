@@ -1,9 +1,10 @@
-import {Module} from '@nestjs/common';
+import {forwardRef, Module} from '@nestjs/common';
 import {AuthService} from './auth.service';
 import {AuthController} from './auth.controller';
 import {ConfigModule} from "@nestjs/config";
 import {ClientsModule, Transport} from "@nestjs/microservices";
 import {JwtModule} from "@nestjs/jwt";
+import {FilmModule} from "../film/film.module";
 
 
 @Module({
@@ -29,10 +30,12 @@ import {JwtModule} from "@nestjs/jwt";
 			signOptions: {
 				expiresIn: process.env.EXPIRES_IN || '24h'
 			}
-		})
+		}),
+		forwardRef(() => FilmModule),
 	],
 	providers: [AuthService],
-	controllers: [AuthController]
+	controllers: [AuthController],
+	exports: [AuthService, JwtModule]
 })
 export class AuthModule {
 }

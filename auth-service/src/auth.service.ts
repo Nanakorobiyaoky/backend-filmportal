@@ -1,5 +1,5 @@
 import {HttpStatus, Injectable} from '@nestjs/common';
-import {LoginPasswordDto} from "./dto/login-password.dto";
+import {LoginPasswordRoleDto} from "./dto/login-password-role.dto";
 import {InjectModel} from "@nestjs/sequelize";
 import {User} from "./model/users.model";
 import {RpcException} from "@nestjs/microservices";
@@ -11,10 +11,10 @@ export class AuthService {
 	constructor(@InjectModel(User) private readonly userRepository: typeof User) {
 	}
 
-	async loginUser(loginPasswordDto: LoginPasswordDto) {
+	async loginUser(loginPasswordRoleDto: LoginPasswordRoleDto) {
 
-		const login = loginPasswordDto.login
-		const password = loginPasswordDto.password
+		const login = loginPasswordRoleDto.login
+		const password = loginPasswordRoleDto.password
 
 		const user = await this.userRepository.findOne({
 			where: {
@@ -37,20 +37,24 @@ export class AuthService {
 
 	}
 
-	async registerUser(loginPasswordDto: LoginPasswordDto) {
+	async registerUser(loginPasswordRoleDto: LoginPasswordRoleDto) {
 
 		try {
-			const login = loginPasswordDto.login
-			const password = await bcrypt.hash(loginPasswordDto.password, 5);
+
+			const login = loginPasswordRoleDto.login
+			const role = loginPasswordRoleDto.role
+			const password = await bcrypt.hash(loginPasswordRoleDto.password, 5);
+
 
 			const newUser = await this.userRepository.create({
 				login: login,
-				password: password
+				password: password,
+				role: role ? role : 'user'
 			})
 
 			return newUser
 
-		} catch {
+		} catch (e) {
 			throw new RpcException({
 				message: 'User with this login already exists',
 				status: HttpStatus.BAD_REQUEST
