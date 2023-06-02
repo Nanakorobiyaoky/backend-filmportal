@@ -7,6 +7,7 @@ import {PersonModule} from "../person/person.module";
 import {CommentModule} from "../comment/comment.module";
 import {AuthModule} from "../auth/auth.module";
 
+
 @Module({
 	imports: [
 		ConfigModule.forRoot({

@@ -11,7 +11,7 @@ services:
     ports:
       - 4998:4999
     restart: always
-    command: npm run start:docker
+    command: npm run start:prod
     depends_on:
       - website-rabbitmq
     networks:

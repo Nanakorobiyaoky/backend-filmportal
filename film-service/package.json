@@ -1,5 +1,5 @@
 {
-  "name": "website",
+  "name": "film-service",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -27,6 +27,7 @@
     "@nestjs/microservices": "^9.4.1",
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/sequelize": "^9.0.2",
+    "@nestjs/serve-static": "^3.0.1",
     "@types/sequelize": "^4.28.15",
     "amqp-connection-manager": "^4.1.13",
     "amqplib": "^0.10.3",

@@ -21,7 +21,8 @@ import {FilmTranslator} from "./models/through/films-translators.model";
 import {FilmVoiceDirector} from "./models/through/films-voice-directors.model";
 import {FilmVoice} from "./models/through/films-voices.model";
 import {FilmWriter} from "./models/through/films-writers.model";
-
+import {ServeStaticModule} from "@nestjs/serve-static";
+import * as path from "path";
 @Module({
 	imports: [
 		ConfigModule.forRoot({

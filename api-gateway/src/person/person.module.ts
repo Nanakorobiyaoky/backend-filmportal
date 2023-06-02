@@ -4,6 +4,8 @@ import {PersonService} from './person.service';
 import {ConfigModule} from "@nestjs/config";
 import {ClientsModule, Transport} from "@nestjs/microservices";
 import {FilmModule} from "../film/film.module";
+import {ServeStaticModule} from "@nestjs/serve-static";
+import * as path from "path";
 
 @Module({
 	imports: [
