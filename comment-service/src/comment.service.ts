@@ -16,7 +16,7 @@ export class CommentService {
 
 	) {}
 
-	async createComment(createCommentDto: CreateCommentDto) {
+	async createComment(createCommentDto: CreateCommentDto): Promise<void> {
 
 		const {filmId, text, userId, userLogin} = createCommentDto
 
@@ -32,7 +32,7 @@ export class CommentService {
 
 	}
 
-	async createSubcomment(createSubcommentDto: CreateSubcommentDto) {
+	async createSubcomment(createSubcommentDto: CreateSubcommentDto): Promise<void> {
 
 		const {commentId, userId, text, userLogin} = createSubcommentDto
 
@@ -57,7 +57,7 @@ export class CommentService {
 		})
 	}
 
-	async getCommentsByFilmId(id: number) {
+	async getCommentsByFilmId(id: number): Promise<Comment[] | []> {
 		try {
 			const comments = await this.commentRepository.findAll({
 				where: {

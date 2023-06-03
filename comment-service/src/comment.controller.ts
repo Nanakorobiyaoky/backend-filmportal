@@ -10,12 +10,12 @@ export class CommentController {
 	}
 
 	@EventPattern({cmd: 'create comment'})
-	createComment(@Payload() createCommentDto: CreateCommentDto) {
+	createComment(@Payload() createCommentDto: CreateCommentDto): void {
 		this.commentService.createComment(createCommentDto)
 	}
 
 	@EventPattern({cmd: "create subcomment"})
-	createSubcomment(@Payload() createSubcommentDto: CreateSubcommentDto) {
+	createSubcomment(@Payload() createSubcommentDto: CreateSubcommentDto): void {
 		this.commentService.createSubcomment(createSubcommentDto)
 	}
 

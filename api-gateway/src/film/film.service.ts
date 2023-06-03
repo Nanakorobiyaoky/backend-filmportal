@@ -5,6 +5,12 @@ import {PersonService} from "../person/person.service";
 import {CommentService} from "../comment/comment.service";
 import {CreateCommentDto} from "../dto/create-comment.dto";
 import {CreateSubcommentDto} from "../dto/create-subcomment.dto";
+import {MainPageDataDto} from "../dto/main-page-data.dto";
+import {FilmFullInfoDto} from "../dto/film-full-info.dto";
+import {CountryDto} from "../dto/country.dto";
+import {FilterDto} from "../dto/filter.dto";
+import {DirectorActorNamePathDto} from "../dto/director-actor-name-path.dto";
+import {PersonNamePathDto} from "../dto/person-name-path.dto";
 
 @Injectable()
 export class FilmService {
@@ -13,7 +19,7 @@ export class FilmService {
 							@Inject(CommentService) private readonly commentService: CommentService) {
 	}
 
-	async getFilmById(id: number) {
+	async getFilmById(id: number): Promise<FilmFullInfoDto> {
 		const filmData = await firstValueFrom(this.filmClient.send({cmd: "get film by id"}, id)
 			.pipe(timeout({
 					each: 2000,
@@ -60,7 +66,7 @@ export class FilmService {
 		return response
 	}
 
-	async getMainPageData(genresIdArr) {
+	async getMainPageData(genresIdArr): Promise<MainPageDataDto> {
 		const response = await firstValueFrom(this.filmClient.send({cmd: "get main page data"}, genresIdArr)
 			.pipe(timeout({
 					each: 2000,
@@ -75,12 +81,59 @@ export class FilmService {
 		return response
 	}
 
-	async createComment(createCommentDto: CreateCommentDto, id: number) {
+	createComment(createCommentDto: CreateCommentDto, id: number): void {
 		createCommentDto.filmId = id
-		await this.commentService.createComment(createCommentDto)
+		this.commentService.createComment(createCommentDto)
 	}
 
-	async createSubcomment(createSubcommentDto: CreateSubcommentDto) {
-		await this.commentService.createSubcomment(createSubcommentDto)
+	createSubcomment(createSubcommentDto: CreateSubcommentDto): void {
+		this.commentService.createSubcomment(createSubcommentDto)
 	}
+
+	async getFilmsNoFilter() {
+		const noFilter: FilterDto = {
+			pageIndex: 0,
+			year: 0,
+			rating: 0,
+			marks: 0,
+			country: '',
+			actors: '',
+			directors: '',
+		}
+
+		return await this.getFilmsByFilter(noFilter)
+	}
+
+	async getFilmsByFilter(filter: FilterDto) {
+
+		let filmsIdAfterPersonFilter = [];
+
+		if (filter.actors || filter.directors) {
+			const namesPath: DirectorActorNamePathDto = {
+				directorNamePath: filter.directors,
+				actorNamePath: filter.actors
+			}
+
+			filmsIdAfterPersonFilter = await this.personService.findPersonsByName(namesPath)
+		}
+
+		filter.filmsIdAfterPersonFilter = filmsIdAfterPersonFilter
+
+
+		const filmsByFilter = await firstValueFrom(this.filmClient.send({cmd: "get films by filters"}, filter)
+			.pipe(timeout({
+					each: 2000,
+					with: () => throwError(() => new HttpException('GATEWAY TIMEOUT', HttpStatus.GATEWAY_TIMEOUT))
+				})
+			)
+		)
+
+		return filmsByFilter
+	}
+
+	async getFilmsByFilterAndGenre(filterDto: FilterDto, genre: string) {
+		filterDto.genre = genre
+		return await this.getFilmsByFilter(filterDto)
+	}
+
 }

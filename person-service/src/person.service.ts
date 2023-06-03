@@ -12,8 +12,11 @@ import {FilmTranslator} from "./models/through/films-translators.model";
 import {FilmVoiceDirector} from "./models/through/films-voice-directors.model";
 import {FilmVoice} from "./models/through/films-voices.model";
 import {FilmWriter} from "./models/through/films-writers.model";
-import {Model} from "sequelize-typescript";
+import {intersection} from 'lodash'
 import {RpcException} from "@nestjs/microservices";
+import {Op} from "sequelize";
+import {DirectorActorNamePathDto} from "./dto/director-actor-name-path.dto";
+import {PersonNamePathDto} from "./dto/person-name-path.dto";
 
 @Injectable()
 export class PersonService {
@@ -31,7 +34,8 @@ export class PersonService {
 		@InjectModel(FilmVoiceDirector) private readonly filmVoiceDirectorRepository: typeof FilmVoiceDirector,
 		@InjectModel(FilmVoice) private readonly filmVoiceRepository: typeof FilmVoice,
 		@InjectModel(FilmWriter) private readonly filmWriterRepository: typeof FilmWriter,
-		){}
+	) {
+	}
 
 	async getPersonById(id: number) {
 		const person = await this.personRepository.findByPk(id, {
@@ -67,7 +71,7 @@ export class PersonService {
 
 	private async getPersonsByRole(filmId: number, repository) {
 		try {
-			const persons =  await repository.findAll({
+			const persons = await repository.findAll({
 				where: {
 					film_id: filmId
 				},
@@ -89,5 +93,81 @@ export class PersonService {
 			message: 'Not Found',
 			status: HttpStatus.NOT_FOUND
 		})
+	}
+
+	async findPersonsByName(namesPath: DirectorActorNamePathDto): Promise<number[] | []>  {
+
+		const directorNamePath = namesPath.directorNamePath;
+		const actorNamePath = namesPath.actorNamePath;
+
+		let filmsDirectorFilter;
+		let filmsActorFilter;
+
+		if (directorNamePath) {
+			filmsDirectorFilter = await this.getFilmsIdByNamePartAndRepo(directorNamePath, this.filmDirectorRepository)
+		}
+
+		if (actorNamePath) {
+			filmsActorFilter = await this.getFilmsIdByNamePartAndRepo(actorNamePath, this.filmActorRepository)
+		}
+
+		if (filmsDirectorFilter && filmsActorFilter) {
+			return intersection(filmsDirectorFilter, filmsActorFilter)
+		} else {
+			return filmsActorFilter ?? filmsDirectorFilter
+		}
+
+	}
+
+	private async getFilmsIdByNamePartAndRepo(namePath, repository): Promise<number[]> {
+		const result = await repository.findAll({
+			attributes: ['film_id'],
+			include: {
+				model: this.personRepository,
+				where: {
+					name_ru: {
+						[Op.iLike]: `%${namePath}%`
+					}
+				},
+				attributes: []
+			}
+		})
+
+		return result.map(obj => obj.film_id)
+	}
+
+
+	async getPersonsByNamePart(personNamePathDto: PersonNamePathDto) {
+		let repository;
+
+		if (personNamePathDto.role === 'director') {
+			repository = this.filmDirectorRepository
+		} else if (personNamePathDto.role === 'actor') {
+			repository = this.filmActorRepository
+		} else {
+			throw new RpcException({
+				message: 'BAD REQUEST',
+				status: HttpStatus.BAD_REQUEST
+			})
+		}
+
+		const personsNames = await repository.findAll({
+			include: {
+				distinct: ['id', 'name_ru', 'name_en'],
+				model: this.personRepository,
+				attributes: ['id', 'name_ru', 'name_en'],
+				where: {
+					name_ru: {
+						[Op.iLike]: `%${personNamePathDto.namePath}%`
+					}
+				}
+			},
+			attributes: {
+				exclude: ['person_id', 'film_id'],
+			},
+		})
+
+		return Array.from(new Set(personsNames.map(obj => obj.person.name_ru)))
+
 	}
 }

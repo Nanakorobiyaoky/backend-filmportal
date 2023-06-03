@@ -1,6 +1,7 @@
 import {Controller} from '@nestjs/common';
 import {FilmService} from './film.service';
 import {MessagePattern, Payload} from "@nestjs/microservices";
+import {FilterDto} from "./dto/filter.dto";
 
 @Controller()
 export class FilmController {
@@ -25,6 +26,11 @@ export class FilmController {
 	@MessagePattern({ cmd: "get main page data" })
 	getMainPageData(@Payload() genreNames: Array<string>) {
 		return this.filmService.getMainPageData(genreNames, 10)
+	}
+
+	@MessagePattern({cmd: "get films by filters"})
+	getMoviesByFilter(@Payload() filter: FilterDto) {
+		return this.filmService.getFilmsByFilter(filter)
 	}
 
 }

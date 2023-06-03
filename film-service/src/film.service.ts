@@ -5,6 +5,9 @@ import {Genre} from "./models/genres.model";
 import {Country} from "./models/countries.model";
 import {FilmBudget} from "./models/films-budget.model";
 import {RpcException} from "@nestjs/microservices";
+import {FilmCardDto} from "./dto/film-card.dto";
+import {FilterDto} from "./dto/filter.dto";
+import {Op} from "sequelize";
 
 @Injectable()
 export class FilmService {
@@ -15,7 +18,7 @@ export class FilmService {
 	) {
 	}
 
-	async getFilmById(id: number) {
+	async getFilmById(id: number): Promise<Film> {
 		const film = await this.filmsRepository.findByPk(id, {
 			include: [
 				{
@@ -69,7 +72,7 @@ export class FilmService {
 
 	}
 
-	async getFilmsByPersonId(data) {
+	async getFilmsByPersonId(data): Promise<FilmCardDto[]> {
 		for (let key in data) {
 			let filmIdArray = data[key]
 
@@ -164,4 +167,122 @@ export class FilmService {
 			status: HttpStatus.NOT_FOUND
 		})
 	}
+
+	async getFilmsByFilter(filter: FilterDto) {
+
+		if (filter.filmsIdAfterPersonFilter.length > 0) {
+			const result = await this.filmsRepository.findAll({
+				offset: filter.pageIndex * 15,
+				order: [['rating', 'DESC']],
+				limit: 15,
+				attributes: ['id', 'name_ru', 'name_en', 'poster', 'rating', 'world_premier'],
+				include: [
+					{
+						model: this.genreRepository,
+						through: {attributes: []},
+						where: {
+							name_en: {
+								[Op.iLike]: `%${filter.genre ? filter.genre : ''}%`
+							}
+						}
+					},
+					{
+						model: this.countryRepository,
+						through: {attributes: []},
+						where: {
+							name: {
+								[Op.iLike]: `%${filter.country}%`,
+							}
+						},
+					},
+				],
+				where: {
+					id: {
+						[Op.in]: filter.filmsIdAfterPersonFilter,
+					},
+					rating: {
+						[Op.gte]: filter.rating
+					},
+					marks: {
+						[Op.gte]: filter.marks
+					},
+					world_premier: {
+						[Op.between]: [
+							this.createStartDate(filter.year <= 1900 ? 1900 : filter.year),
+							this.createEndDate(filter.year <= 1900 ? 2100 : filter.year)
+						]
+					},
+				},
+			})
+			return result
+		}
+
+		const result = await this.filmsRepository.findAll({
+			offset: filter.pageIndex * 15,
+			order: [['rating', 'DESC']],
+			limit: 15,
+			attributes: ['id', 'name_ru', 'name_en', 'poster', 'rating', 'world_premier'],
+			include: [
+				{
+					model: this.genreRepository,
+					through: {attributes: []},
+					where: {
+						name_en: {
+							[Op.iLike]: `%${filter.genre ? filter.genre : ''}%`
+						}
+					}
+				},
+				{
+					model: this.countryRepository,
+					through: {attributes: []},
+					where: {
+						name: {
+							[Op.iLike]: `%${filter.country}%`,
+						}
+					},
+				},
+			],
+			where: {
+				rating: {
+					[Op.gte]: filter.rating
+				},
+				marks: {
+					[Op.gte]: filter.marks
+				},
+				world_premier: {
+					[Op.between]: [
+						this.createStartDate(filter.year <= 1900 ? 1900 : filter.year),
+						this.createEndDate(filter.year <= 1900 ? 2100 : filter.year)
+					]
+				},
+			},
+		})
+
+		return result
+	}
+
+	private createStartDate(year: number) {
+		let result = new Date()
+		result.setUTCFullYear(year)
+		result.setUTCMonth(0)
+		result.setUTCDate(0)
+		result.setUTCHours(0)
+		result.setUTCMinutes(0)
+		result.setUTCMilliseconds(0)
+		result.setUTCSeconds(0)
+		return new Date(result)
+	}
+
+	private createEndDate(year: number) {
+		let result = new Date()
+		result.setUTCFullYear(year)
+		result.setUTCMonth(11)
+		result.setUTCDate(31)
+		result.setUTCHours(0)
+		result.setUTCMinutes(0)
+		result.setUTCMilliseconds(0)
+		result.setUTCSeconds(0)
+		return new Date(result)
+	}
+
 }

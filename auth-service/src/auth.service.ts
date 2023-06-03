@@ -11,7 +11,7 @@ export class AuthService {
 	constructor(@InjectModel(User) private readonly userRepository: typeof User) {
 	}
 
-	async loginUser(loginPasswordRoleDto: LoginPasswordRoleDto) {
+	async loginUser(loginPasswordRoleDto: LoginPasswordRoleDto): Promise<User> {
 
 		const login = loginPasswordRoleDto.login
 		const password = loginPasswordRoleDto.password
@@ -37,7 +37,7 @@ export class AuthService {
 
 	}
 
-	async registerUser(loginPasswordRoleDto: LoginPasswordRoleDto) {
+	async registerUser(loginPasswordRoleDto: LoginPasswordRoleDto): Promise<User> {
 
 		try {
 
