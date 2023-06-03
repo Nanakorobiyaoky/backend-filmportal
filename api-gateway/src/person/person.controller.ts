@@ -13,7 +13,7 @@ export class PersonController {
 	}
 
 
-	@Put('movies/:genre')
+	@Put('movies/')
 	getPersonsByNamePart(@Body() personNamePathDto: PersonNamePathDto) {
 		return this.personService.getPersonsByNamePart(personNamePathDto)
 	}

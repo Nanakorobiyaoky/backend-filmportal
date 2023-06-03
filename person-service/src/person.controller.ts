@@ -27,6 +27,7 @@ export class PersonController {
 
 	@MessagePattern({cmd: "get persons by role and name path"})
 	getPersonsByNamePart(@Payload() personNamePathDto: PersonNamePathDto) {
+		console.log(personNamePathDto)
 		return this.personService.getPersonsByNamePart(personNamePathDto)
 	}
 

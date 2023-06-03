@@ -133,6 +133,7 @@ export class PersonService {
 			}
 		})
 
+
 		return result.map(obj => obj.film_id)
 	}
 

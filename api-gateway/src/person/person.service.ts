@@ -60,7 +60,7 @@ export class PersonService {
 	}
 
 	async getPersonsByNamePart(personNamePathDto: PersonNamePathDto) {
-		const persons = await firstValueFrom(this.personClient.send({cmd: "get persons by role and name path"}, personNamePathDto)
+		const persons = this.personClient.send({cmd: "get persons by role and name path"}, personNamePathDto)
 			.pipe(timeout({
 					each: 2000,
 					with: () => throwError(() => new HttpException('GATEWAY TIMEOUT', HttpStatus.GATEWAY_TIMEOUT))
@@ -69,7 +69,7 @@ export class PersonService {
 					return throwError(() => new HttpException(error.message, error.status));
 				})
 			)
-		)
+
 
 		return persons
 	}
