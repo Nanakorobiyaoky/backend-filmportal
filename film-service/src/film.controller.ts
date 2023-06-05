@@ -33,4 +33,14 @@ export class FilmController {
 		return this.filmService.getFilmsByFilter(filter)
 	}
 
+	@MessagePattern({cmd: "get all genres"})
+	getAllGenres() {
+		return this.filmService.getAllGenres()
+	}
+
+	@MessagePattern({cmd: "get all countries"})
+	getAllCountries() {
+		return this.filmService.getAllCountries()
+	}
+
 }

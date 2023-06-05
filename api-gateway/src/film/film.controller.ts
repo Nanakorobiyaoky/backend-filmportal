@@ -1,10 +1,11 @@
-import {Body, Controller, Get, Param, Post, Put, UseGuards} from "@nestjs/common";
+import {Body, Controller, Get, Param, Post, Put, UseGuards, UsePipes} from "@nestjs/common";
 import {FilmService} from "./film.service";
 import {CreateCommentDto} from "../dto/create-comment.dto";
 import {JwtAuthGuard} from "../guards/jwt-auth.guard";
 import {CreateSubcommentDto} from "../dto/create-subcomment.dto";
 import {FilmFullInfoDto} from "../dto/film-full-info.dto";
 import {FilterDto} from "../dto/filter.dto";
+import {ValidationPipe} from "../pipes/validation.pipe";
 
 
 
@@ -22,11 +23,13 @@ export class FilmController {
     return this.filmService.getFilmsNoFilter()
   }
 
+  @UsePipes(ValidationPipe)
   @Post('movies')
   getFilmsByFilter(@Body() filterDto: FilterDto) {
     return this.filmService.getFilmsByFilter(filterDto)
   }
 
+  @UsePipes(ValidationPipe)
   @Post('movies/:genre')
   getFilmsByFilterAndGenre(@Body() filterDto: FilterDto, @Param('genre') genre: string) {
     return this.filmService.getFilmsByFilterAndGenre(filterDto, genre)
@@ -44,5 +47,14 @@ export class FilmController {
     this.filmService.createSubcomment(createSubcommentDto)
   }
 
+  @Get('movies/genres')
+  getAllGenres() {
+    return this.filmService.getAllGenres()
+  }
+
+  @Get('movies/countries')
+  getAllCountries() {
+    return this.filmService.getAllCountries()
+  }
 }
 

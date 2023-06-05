@@ -4,8 +4,8 @@ import {catchError, firstValueFrom, throwError, timeout} from "rxjs";
 import {FilmService} from "../film/film.service";
 import {PersonFullInfoDto} from "../dto/person-full-info.dto";
 import {FilmPersonsDto} from "../dto/film-persons.dto";
-import {DirectorActorNamePathDto} from "../dto/director-actor-name-path.dto";
-import {PersonNamePathDto} from "../dto/person-name-path.dto";
+import {DirectorActorNamePartDto} from "../dto/director-actor-name-part.dto";
+import {PersonNamePartDto} from "../dto/person-name-part.dto";
 
 @Injectable()
 export class PersonService {
@@ -44,8 +44,8 @@ export class PersonService {
 		return persons
 	}
 
-	async findPersonsByName(NamePath: DirectorActorNamePathDto) {
-		const persons = await firstValueFrom(this.personClient.send({cmd: "get persons by name Path"}, NamePath)
+	async findPersonsByName(NamePart: DirectorActorNamePartDto) {
+		const persons = await firstValueFrom(this.personClient.send({cmd: "get persons by name Part"}, NamePart)
 			.pipe(timeout({
 					each: 2000,
 					with: () => throwError(() => new HttpException('GATEWAY TIMEOUT', HttpStatus.GATEWAY_TIMEOUT))
@@ -59,8 +59,8 @@ export class PersonService {
 		return persons
 	}
 
-	async getPersonsByNamePart(personNamePathDto: PersonNamePathDto) {
-		const persons = this.personClient.send({cmd: "get persons by role and name path"}, personNamePathDto)
+	async getPersonsByNamePart(personNamePartDto: PersonNamePartDto) {
+		const persons = this.personClient.send({cmd: "get persons by role and name part"}, personNamePartDto)
 			.pipe(timeout({
 					each: 2000,
 					with: () => throwError(() => new HttpException('GATEWAY TIMEOUT', HttpStatus.GATEWAY_TIMEOUT))

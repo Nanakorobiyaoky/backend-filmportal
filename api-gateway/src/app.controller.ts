@@ -5,9 +5,7 @@ import {MainPageDataDto} from "./dto/main-page-data.dto";
 @Controller()
 export class AppController {
 
-	constructor(
-		private readonly filmService: FilmService
-	) {}
+	constructor(private readonly filmService: FilmService) {}
 
 	@Get()
 	getMainPageData(): Promise<MainPageDataDto> {

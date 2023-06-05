@@ -15,8 +15,8 @@ import {FilmWriter} from "./models/through/films-writers.model";
 import {intersection} from 'lodash'
 import {RpcException} from "@nestjs/microservices";
 import {Op} from "sequelize";
-import {DirectorActorNamePathDto} from "./dto/director-actor-name-path.dto";
-import {PersonNamePathDto} from "./dto/person-name-path.dto";
+import {DirectorActorNamePartDto} from "./dto/director-actor-name-part.dto";
+import {PersonNamePartDto} from "./dto/person-name-part.dto";
 
 @Injectable()
 export class PersonService {
@@ -95,20 +95,20 @@ export class PersonService {
 		})
 	}
 
-	async findPersonsByName(namesPath: DirectorActorNamePathDto): Promise<number[] | []>  {
+	async findPersonsByName(namesPart: DirectorActorNamePartDto): Promise<number[] | []>  {
 
-		const directorNamePath = namesPath.directorNamePath;
-		const actorNamePath = namesPath.actorNamePath;
+		const directorNamePart = namesPart.directorNamePart;
+		const actorNamePart = namesPart.actorNamePart;
 
 		let filmsDirectorFilter;
 		let filmsActorFilter;
 
-		if (directorNamePath) {
-			filmsDirectorFilter = await this.getFilmsIdByNamePartAndRepo(directorNamePath, this.filmDirectorRepository)
+		if (directorNamePart) {
+			filmsDirectorFilter = await this.getFilmsIdByNamePartAndRepo(directorNamePart, this.filmDirectorRepository)
 		}
 
-		if (actorNamePath) {
-			filmsActorFilter = await this.getFilmsIdByNamePartAndRepo(actorNamePath, this.filmActorRepository)
+		if (actorNamePart) {
+			filmsActorFilter = await this.getFilmsIdByNamePartAndRepo(actorNamePart, this.filmActorRepository)
 		}
 
 		if (filmsDirectorFilter && filmsActorFilter) {
@@ -119,14 +119,14 @@ export class PersonService {
 
 	}
 
-	private async getFilmsIdByNamePartAndRepo(namePath, repository): Promise<number[]> {
+	private async getFilmsIdByNamePartAndRepo(namePart, repository): Promise<number[]> {
 		const result = await repository.findAll({
 			attributes: ['film_id'],
 			include: {
 				model: this.personRepository,
 				where: {
 					name_ru: {
-						[Op.iLike]: `%${namePath}%`
+						[Op.iLike]: `%${namePart}%`
 					}
 				},
 				attributes: []
@@ -138,12 +138,12 @@ export class PersonService {
 	}
 
 
-	async getPersonsByNamePart(personNamePathDto: PersonNamePathDto) {
+	async getPersonsByNamePart(personNamePartDto: PersonNamePartDto) {
 		let repository;
 
-		if (personNamePathDto.role === 'director') {
+		if (personNamePartDto.role === 'director') {
 			repository = this.filmDirectorRepository
-		} else if (personNamePathDto.role === 'actor') {
+		} else if (personNamePartDto.role === 'actor') {
 			repository = this.filmActorRepository
 		} else {
 			throw new RpcException({
@@ -159,7 +159,7 @@ export class PersonService {
 				attributes: ['id', 'name_ru', 'name_en'],
 				where: {
 					name_ru: {
-						[Op.iLike]: `%${personNamePathDto.namePath}%`
+						[Op.iLike]: `%${personNamePartDto.namePart}%`
 					}
 				}
 			},

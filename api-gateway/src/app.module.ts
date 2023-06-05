@@ -3,7 +3,6 @@ import {ConfigModule} from '@nestjs/config';
 import {FilmModule} from './film/film.module';
 import {PersonModule} from './person/person.module';
 import {AppController} from './app.controller';
-import {AppService} from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { CommentModule } from './comment/comment.module';
 import {ServeStaticModule} from "@nestjs/serve-static";
@@ -24,7 +23,7 @@ import * as path from "path";
 		CommentModule,
 	],
 	controllers: [AppController],
-	providers: [AppService],
+	providers: [],
 })
 export class AppModule {
 }

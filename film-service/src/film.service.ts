@@ -285,4 +285,11 @@ export class FilmService {
 		return new Date(result)
 	}
 
+	async getAllGenres() {
+		return this.genreRepository.findAll()
+	}
+
+	async getAllCountries() {
+		return this.countryRepository.findAll()
+	}
 }

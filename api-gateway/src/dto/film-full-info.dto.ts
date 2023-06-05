@@ -22,7 +22,7 @@ export class FilmFullInfoDto {
 	country: CountryDto[]
 	genres: GenreDto[]
 	budget: BudgetDto | null
-	persons: FilmPersonsDto
+	persons: FilmPersonsDto | []
 
 	comments: CommentDto[] | []
 }
