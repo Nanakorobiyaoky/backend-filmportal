@@ -29,7 +29,7 @@ export class FilmController {
     return this.filmService.getFilmsByFilter(filterDto)
   }
 
-  @UsePipes(ValidationPipe)
+
   @Post('movies/:genre')
   getFilmsByFilterAndGenre(@Body() filterDto: FilterDto, @Param('genre') genre: string) {
     return this.filmService.getFilmsByFilterAndGenre(filterDto, genre)

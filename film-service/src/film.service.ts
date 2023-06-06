@@ -19,6 +19,7 @@ export class FilmService {
 	}
 
 	async getFilmById(id: number): Promise<Film> {
+
 		const film = await this.filmsRepository.findByPk(id, {
 			include: [
 				{
@@ -161,13 +162,6 @@ export class FilmService {
 		return films
 	}
 
-	private notFoundException() {
-		throw new RpcException({
-			message: 'Not Found',
-			status: HttpStatus.NOT_FOUND
-		})
-	}
-
 	async getFilmsByFilter(filter: FilterDto) {
 
 		if (filter.filmsIdAfterPersonFilter.length > 0) {
@@ -208,8 +202,8 @@ export class FilmService {
 					},
 					world_premier: {
 						[Op.between]: [
-							this.createStartDate(filter.year <= 1900 ? 1900 : filter.year),
-							this.createEndDate(filter.year <= 1900 ? 2100 : filter.year)
+							this.createStartDateOfYear(filter.year <= 5 ? 5 : filter.year),
+							this.createEndDateOfYear(filter.year <= 5 ? 5 : filter.year)
 						]
 					},
 				},
@@ -251,8 +245,8 @@ export class FilmService {
 				},
 				world_premier: {
 					[Op.between]: [
-						this.createStartDate(filter.year <= 1900 ? 1900 : filter.year),
-						this.createEndDate(filter.year <= 1900 ? 2100 : filter.year)
+						this.createStartDateOfYear(filter.year === 0 ? 1900 : filter.year),
+						this.createEndDateOfYear(filter.year === 0 ? 2100 : filter.year)
 					]
 				},
 			},
@@ -261,7 +255,14 @@ export class FilmService {
 		return result
 	}
 
-	private createStartDate(year: number) {
+	private notFoundException() {
+		throw new RpcException({
+			message: 'Not Found',
+			status: HttpStatus.NOT_FOUND
+		})
+	}
+
+	private createStartDateOfYear(year: number) {
 		let result = new Date()
 		result.setUTCFullYear(year)
 		result.setUTCMonth(0)
@@ -273,7 +274,7 @@ export class FilmService {
 		return new Date(result)
 	}
 
-	private createEndDate(year: number) {
+	private createEndDateOfYear(year: number) {
 		let result = new Date()
 		result.setUTCFullYear(year)
 		result.setUTCMonth(11)
